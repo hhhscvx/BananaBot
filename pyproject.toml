@@ -6,6 +6,7 @@ authors = ["hhhscvx <hhhscvx@protonmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+pydantic-settings = "^2.5.2"
 
 [tool.poetry.dev-dependencies]
 
