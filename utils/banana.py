@@ -70,6 +70,26 @@ class Banana:
 
         return resp_json
 
+    async def get_quests(self) -> list[dict]:
+        resp = await self.session.get(url='https://interface.carv.io/banana/get_quest_list')
+        resp_json = await resp.json()
+
+        return resp_json['data']['quest_list']
+
+    async def achieve_quest(self, quest_id: int) -> bool:
+        resp = await self.session.post(url='https://interface.carv.io/banana/achieve_quest',
+                                       json={'quest_id': quest_id})
+        resp_json = await resp.json()
+
+        return resp_json['data']['is_achieved']
+
+    async def claim_quest(self, quest_id: int) -> int:
+        resp = await self.session.post(url='https://interface.carv.io/banana/claim_quest',
+                                       json={'quest_id': quest_id})
+        resp_json = await resp.json()
+
+        return resp_json['data']['peel']  # earned
+
     async def get_tg_web_data(self):
         try:
             await self.tg_client.connect()
