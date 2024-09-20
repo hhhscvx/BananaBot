@@ -52,6 +52,24 @@ class Banana:
         self.session.headers["Authorization"] = resp_json['data']['token']
         return True
 
+    async def get_user_info(self) -> int:
+        resp = await self.session.get(url='https://interface.carv.io/banana/get_user_info')
+        resp_json = await resp.json()
+
+        return resp_json['data']['max_click_count']
+
+    async def do_click(self, taps_count: int) -> dict:
+        # max_click_count = await self.get_user_info()
+        # max_random_clicks = config.RANDOM_TAPS_COUNT[1] if max_click_count > 400 else max_click_count // 3
+        # print('max_random_clicks', max_random_clicks)
+        # бля это то я в стартере должен прописывать
+
+        resp = await self.session.post(url='https://interface.carv.io/banana/login',
+                                       json={'clickCount': taps_count})
+        resp_json = await resp.json()
+
+        return resp_json
+
     async def get_tg_web_data(self):
         try:
             await self.tg_client.connect()

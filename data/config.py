@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     API_HASH: str
 
     DELAY_CONN_ACCOUNT: list = [5, 15]
+    RANDOM_TAPS_COUNT: list = [5, 200]
 
     USE_PROXY_FROM_FILE: bool = False  # True - if use proxy from file, False - if use proxy from accounts.json
     PROXY_PATH: str = "data/proxy.txt"
