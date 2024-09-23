@@ -68,6 +68,24 @@ async def start(tg_client: Client, proxy: str | None = None):
                     lottery = await banana.do_lottery()
                     logger.success(f"{session_name} | Claimed Banana in lottery: «{lottery['name']}»")
 
+                # EQUIP BANANA:
+                if config.AUTO_EQUIP_BANANA:
+                    banana_list = await banana.get_banana_list()
+                    banana_with_max_peel = max(
+                        (banana for banana in banana_list if banana["count"] > 0),
+                        key=lambda b: b["daily_peel_limit"],
+                    )
+                    banana_id = banana_with_max_peel["banana_id"]
+                    banana_name = banana_with_max_peel["name"]
+                    banana_peel_limit = banana_with_max_peel["daily_peel_limit"]
+                    banana_peel_price = banana_with_max_peel["sell_exchange_peel"]
+                    banana_usdt_price = banana_with_max_peel["sell_exchange_usdt"]
+                    equip_status = await banana.equip_banana(banana_id=banana_id)
+                    if equip_status == 'Success':
+                        logger.success(f"{session_name} | Equiped banana «{banana_name}» | Peel limit: {banana_peel_limit} | "
+                                       f"Peel price: {banana_peel_price} | USDT Price: {banana_usdt_price}")
+                    
+
             except Exception as error:
                 logger.error(f"{session_name} | Error: {error}")
                 await asyncio.sleep(2)

@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     DELAY_CONN_ACCOUNT: list = [5, 15]
     RANDOM_TAPS_COUNT: list = [5, 200]
 
-    EQUIP_BANANA_FROM_LOTTERY_IF_BETTER_THAN_CURRENT: bool = True
+    AUTO_EQUIP_BANANA: bool = True
 
     BLACKLIST_QUESTS: list = ['Bind CARV ID', 'Bind Your Email', 'Bind Your X']
 
