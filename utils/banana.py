@@ -62,15 +62,11 @@ class Banana:
 
         return UserInfo(
             max_click_count=user_data['max_click_count'],
+            today_click_count=user_data['today_click_count'],
             peel_count=user_data['peel']
         )
 
     async def do_click(self, taps_count: int) -> dict:
-        # max_click_count = (await self.get_user_info()).max_click_count
-        # max_random_clicks = config.RANDOM_TAPS_COUNT[1] if max_click_count > 400 else max_click_count // 3
-        # print('max_random_clicks', max_random_clicks)
-        # бля это то я в стартере должен прописывать
-
         resp = await self.session.post(url='https://interface.carv.io/banana/login',
                                        json={'clickCount': taps_count})
         resp_json = await resp.json()
@@ -90,13 +86,13 @@ class Banana:
 
         return resp_json['data']['is_achieved']
 
-    async def claim_quest(self, quest_id: int) -> int:
+    async def claim_quest(self, quest_id: int) -> dict:
         resp = await self.session.post(url='https://interface.carv.io/banana/claim_quest',
                                        json={'quest_id': quest_id})
         resp_json = await resp.json()
         pprint(resp_json)
 
-        return resp_json['data']['peel']  # earned
+        return resp_json  # earned
 
     async def claim_quest_lottery(self) -> dict:
         resp = await self.session.post(url='https://interface.carv.io/banana/claim_quest_lottery',
@@ -129,7 +125,7 @@ class Banana:
         except Exception as error:
             logger.error(f"{self.session_name} | Unknown error when Do lottery: {error}")
             await asyncio.sleep(delay=3)
-    
+
     async def get_banana_list(self) -> list[dict]:
         resp = await self.session.get(url='https://interface.carv.io/banana/get_banana_list')
         resp_json = await resp.json()

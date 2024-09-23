@@ -7,12 +7,14 @@ class Settings(BaseSettings):
     API_ID: int
     API_HASH: str
 
-    DELAY_CONN_ACCOUNT: list = [5, 15]
-    RANDOM_TAPS_COUNT: list = [5, 200]
+    DELAY_CONN_ACCOUNT: list[int] = [5, 15]
+    RANDOM_TAPS_COUNT: list[int] = [5, 200]
+    SLEEP_BETWEEN_TAPS: list[int] = [10, 25]
+    SLEEP_BY_MIN_TAPS: list[int] = [800, 1200]
 
     AUTO_EQUIP_BANANA: bool = True
 
-    BLACKLIST_QUESTS: list = ['Bind CARV ID', 'Bind Your Email', 'Bind Your X']
+    BLACKLIST_QUESTS: list[str] = ['Bind CARV ID', 'Bind Your Email', 'Bind Your X']
 
     USE_PROXY_FROM_FILE: bool = False  # True - if use proxy from file, False - if use proxy from accounts.json
     PROXY_PATH: str = "data/proxy.txt"
