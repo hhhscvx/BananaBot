@@ -12,6 +12,8 @@ class Settings(BaseSettings):
 
     EQUIP_BANANA_FROM_LOTTERY_IF_BETTER_THAN_CURRENT: bool = True
 
+    BLACKLIST_QUESTS: list = ['Bind CARV ID', 'Bind Your Email', 'Bind Your X']
+
     USE_PROXY_FROM_FILE: bool = False  # True - if use proxy from file, False - if use proxy from accounts.json
     PROXY_PATH: str = "data/proxy.txt"
     PROXY_TYPE_TG: str = "socks5"  # proxy type for tg client. "socks4", "socks5" and "http" are supported

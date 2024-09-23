@@ -1,5 +1,6 @@
 
 import asyncio
+from pprint import pprint
 import random
 from urllib.parse import quote, unquote
 
@@ -59,14 +60,12 @@ class Banana:
 
         user_data = resp_json['data']
 
-        user = UserInfo(
+        return UserInfo(
             max_click_count=user_data['max_click_count'],
             peel_count=user_data['peel'],
             equiped_banana_peel_limit=user_data['equip_banana']['daily_peel_limit'],
             can_claim_lottery=user_data['lottery_info']['countdown_end']
         )
-
-        return user
 
     async def do_click(self, taps_count: int) -> dict:
         # max_click_count = (await self.get_user_info()).max_click_count
@@ -80,11 +79,11 @@ class Banana:
 
         return resp_json
 
-    async def get_quests(self) -> list[dict]:
+    async def get_quests(self) -> tuple[list[dict], str, bool]:
         resp = await self.session.get(url='https://interface.carv.io/banana/get_quest_list')
         resp_json = await resp.json()
 
-        return resp_json['data']['quest_list']
+        return resp_json['data']['quest_list'], resp_json['data']['progress'], resp_json['data']['is_claimed']
 
     async def achieve_quest(self, quest_id: int) -> bool:
         resp = await self.session.post(url='https://interface.carv.io/banana/achieve_quest',
@@ -97,6 +96,7 @@ class Banana:
         resp = await self.session.post(url='https://interface.carv.io/banana/claim_quest',
                                        json={'quest_id': quest_id})
         resp_json = await resp.json()
+        pprint(resp_json)
 
         return resp_json['data']['peel']  # earned
 
@@ -106,7 +106,7 @@ class Banana:
                                        json={'claimLotteryType': 1})
         resp_json = await resp.json()
 
-        return resp_json['msg']  # Success
+        return resp_json['msg']  # TODO: Возвращать отсюда еще banana_info
 
     async def get_lottery_info(self) -> dict:
         resp = await self.session.get(url='https://interface.carv.io/banana/get_lottery_info')
@@ -129,12 +129,19 @@ class Banana:
             logger.error(f"{self.session_name} | Unknown error when Do lottery: {error}")
             await asyncio.sleep(delay=3)
 
+    async def claim_quest_lottery(self):
+        resp = await self.session.post(url='https://interface.carv.io/banana/claim_quest_lottery',
+                                       json={})
+        resp_json = await resp.json()
+
+        return resp_json
+
     async def equip_banana(self, banana_id: int):
         resp = await self.session.post(url='https://interface.carv.io/banana/do_equip',
                                        json={'bananaId': banana_id})
         resp_json = await resp.json()
 
-        return resp_json['msg']  # Success
+        return resp_json
 
     async def get_tg_web_data(self):
         try:
@@ -157,8 +164,6 @@ class Banana:
             user = quote(query.split("&user=")[1].split('&auth_date=')[0])
             auth_date = query.split('&auth_date=')[1].split('&hash=')[0]
             hash_ = query.split('&hash=')[1]
-
-            print(f"query_id={query_id}&user={user}&auth_date={auth_date}&hash={hash_}")
 
             return f"query_id={query_id}&user={user}&auth_date={auth_date}&hash={hash_}"
         except Exception as err:
