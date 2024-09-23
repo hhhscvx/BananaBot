@@ -62,9 +62,7 @@ class Banana:
 
         return UserInfo(
             max_click_count=user_data['max_click_count'],
-            peel_count=user_data['peel'],
-            equiped_banana_peel_limit=user_data['equip_banana']['daily_peel_limit'],
-            can_claim_lottery=user_data['lottery_info']['countdown_end']
+            peel_count=user_data['peel']
         )
 
     async def do_click(self, taps_count: int) -> dict:
@@ -101,12 +99,11 @@ class Banana:
         return resp_json['data']['peel']  # earned
 
     async def claim_lottery(self) -> str:
-        # TODO: Сделать проверку что get_user_info.can_claim_lottery == true -> тогда делать claim
         resp = await self.session.post(url='https://interface.carv.io/banana/claim_lottery',
                                        json={'claimLotteryType': 1})
         resp_json = await resp.json()
 
-        return resp_json['msg']  # TODO: Возвращать отсюда еще banana_info
+        return resp_json['msg']
 
     async def get_lottery_info(self) -> dict:
         resp = await self.session.get(url='https://interface.carv.io/banana/get_lottery_info')
@@ -115,15 +112,12 @@ class Banana:
         return resp_json['data']
 
     async def do_lottery(self):
-        """Если в get_lottery есть remain_lottery_count - запускать do_lottery"""
         try:
             resp = await self.session.post(url='https://interface.carv.io/banana/do_lottery',
                                            json={})
             resp_json = await resp.json()
 
-            # name, sell_exchange_peel, sell_exchange_usdt, count, banana_id (чтоб надеть если че)
             return resp_json['data']
-            # TODO: сделать проверку что это пизже чем выбранный банан (daily_peel_limit больше), и тогда надеть его
 
         except Exception as error:
             logger.error(f"{self.session_name} | Unknown error when Do lottery: {error}")

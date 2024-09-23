@@ -60,7 +60,13 @@ async def start(tg_client: Client, proxy: str | None = None):
                     logger.success(f"{session_name} | Claimed lottery by completing quests")
 
                 # LOTTERY:
-                
+                lottery_info = await banana.get_lottery_info()
+                if lottery_info['countdown_end']:
+                    await banana.claim_lottery()
+                    logger.success(f"{session_name} | Claimed daily lottery")
+                for _ in range(lottery_info['remain_lottery_count']):
+                    lottery = await banana.do_lottery()
+                    logger.success(f"{session_name} | Claimed Banana in lottery: «{lottery['name']}»")
 
             except Exception as error:
                 logger.error(f"{session_name} | Error: {error}")
