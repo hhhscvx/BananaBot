@@ -52,14 +52,14 @@ class Banana:
         self.session.headers["Authorization"] = resp_json['data']['token']
         return True
 
-    async def get_user_info(self) -> int:
+    async def get_user_info(self) -> tuple[int | bool]:
         resp = await self.session.get(url='https://interface.carv.io/banana/get_user_info')
         resp_json = await resp.json()
 
-        return resp_json['data']['max_click_count']
+        return resp_json['data']['max_click_count'], resp_json['data']['peel']
 
     async def do_click(self, taps_count: int) -> dict:
-        # max_click_count = await self.get_user_info()
+        # max_click_count, _ = await self.get_user_info()
         # max_random_clicks = config.RANDOM_TAPS_COUNT[1] if max_click_count > 400 else max_click_count // 3
         # print('max_random_clicks', max_random_clicks)
         # бля это то я в стартере должен прописывать
@@ -89,6 +89,35 @@ class Banana:
         resp_json = await resp.json()
 
         return resp_json['data']['peel']  # earned
+
+    async def claim_lottery(self) -> str:
+        # TODO: Сделать проверку что get_user_info['data']['lottery_info']['countdown_end'] true -> тогда делать claim
+        resp = await self.session.post(url='https://interface.carv.io/banana/claim_lottery',
+                                       json={'claimLotteryType': 1})
+        resp_json = await resp.json()
+
+        return resp_json['msg']  # Success
+
+    async def get_lottery_info(self) -> dict:
+        resp = await self.session.get(url='https://interface.carv.io/banana/get_lottery_info')
+        resp_json = await resp.json()
+
+        return resp_json['data']
+
+    async def do_lottery(self):
+        """Если в get_lottery есть remain_lottery_count - запускать do_lottery"""
+        try:
+            resp = await self.session.post(url='https://interface.carv.io/banana/do_lottery',
+                                           json={})
+            resp_json = await resp.json()
+
+            # name, sell_exchange_peel, sell_exchange_usdt, count, banana_id (чтоб надеть если че)
+            return resp_json['data']
+            # TODO: сделать проверку что это пизже чем выбранный банан, и тогда надеть его
+
+        except Exception as error:
+            logger.error(f"{self.session_name} | Unknown error when Do lottery: {error}")
+            await asyncio.sleep(delay=3)
 
     async def get_tg_web_data(self):
         try:
