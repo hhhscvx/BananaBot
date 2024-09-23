@@ -113,11 +113,18 @@ class Banana:
 
             # name, sell_exchange_peel, sell_exchange_usdt, count, banana_id (чтоб надеть если че)
             return resp_json['data']
-            # TODO: сделать проверку что это пизже чем выбранный банан, и тогда надеть его
+            # TODO: сделать проверку что это пизже чем выбранный банан (daily_peel_limit больше), и тогда надеть его
 
         except Exception as error:
             logger.error(f"{self.session_name} | Unknown error when Do lottery: {error}")
             await asyncio.sleep(delay=3)
+
+    async def equip_banana(self, banana_id: int):
+        resp = await self.session.post(url='https://interface.carv.io/banana/do_equip',
+                                       json={'bananaId': banana_id})
+        resp_json = await resp.json()
+
+        return resp_json['msg']  # Success
 
     async def get_tg_web_data(self):
         try:
