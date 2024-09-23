@@ -11,6 +11,7 @@ from pyrogram.raw.types import WebViewResultUrl
 from fake_useragent import UserAgent
 
 from utils.core import logger
+from utils.core.schemas import UserInfo
 from data import config
 
 
@@ -52,14 +53,23 @@ class Banana:
         self.session.headers["Authorization"] = resp_json['data']['token']
         return True
 
-    async def get_user_info(self) -> tuple[int | bool]:
+    async def get_user_info(self) -> UserInfo:
         resp = await self.session.get(url='https://interface.carv.io/banana/get_user_info')
         resp_json = await resp.json()
 
-        return resp_json['data']['max_click_count'], resp_json['data']['peel']
+        user_data = resp_json['data']
+
+        user = UserInfo(
+            max_click_count=user_data['max_click_count'],
+            peel_count=user_data['peel'],
+            equiped_banana_peel_limit=user_data['equip_banana']['daily_peel_limit'],
+            can_claim_lottery=user_data['lottery_info']['countdown_end']
+        )
+
+        return user
 
     async def do_click(self, taps_count: int) -> dict:
-        # max_click_count, _ = await self.get_user_info()
+        # max_click_count = (await self.get_user_info()).max_click_count
         # max_random_clicks = config.RANDOM_TAPS_COUNT[1] if max_click_count > 400 else max_click_count // 3
         # print('max_random_clicks', max_random_clicks)
         # бля это то я в стартере должен прописывать
@@ -91,7 +101,7 @@ class Banana:
         return resp_json['data']['peel']  # earned
 
     async def claim_lottery(self) -> str:
-        # TODO: Сделать проверку что get_user_info['data']['lottery_info']['countdown_end'] true -> тогда делать claim
+        # TODO: Сделать проверку что get_user_info.can_claim_lottery == true -> тогда делать claim
         resp = await self.session.post(url='https://interface.carv.io/banana/claim_lottery',
                                        json={'claimLotteryType': 1})
         resp_json = await resp.json()
