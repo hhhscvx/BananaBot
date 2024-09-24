@@ -49,12 +49,15 @@ async def start(tg_client: Client, proxy: str | None = None):
                         logger.info(f"{session_name} | Skipped is_claimed quest «{quest_name}»")
                         continue
 
-                    await banana.achieve_quest(quest_id=quest_id)
-                    await asyncio.sleep(1.5)
-                    earned_peel = await banana.claim_quest(quest_id=quest_id)
+                    achieved = await banana.achieve_quest(quest_id=quest_id)
                     logger.success(
-                        f"{session_name} | Completed quest «{quest_name}» | Earned: {earned_peel} peel")
-                    await asyncio.sleep(1)
+                        f"{session_name} | Completed quest «{quest_name}» | Achieved: {achieved}")
+                    await asyncio.sleep(2.5)
+                    earned_peel = await banana.claim_quest(quest_id=quest_id)
+                    if earned_peel['msg'] == 'Success':
+                        logger.success(
+                            f"{session_name} | Claimed quest «{quest_name}» | Earned: {earned_peel['data']['peel']} peel")
+                    await asyncio.sleep(3)
 
                 while True:
                     quests, _, can_claim = await banana.get_quests()
@@ -110,6 +113,7 @@ async def start(tg_client: Client, proxy: str | None = None):
                         sleep_time = randint(*config.SLEEP_BY_MIN_TAPS)
                         logger.info(f"{session_name} | Sleep {sleep_time}s...")
                         await asyncio.sleep(sleep_time)
+                        break
 
             except Exception as error:
                 logger.error(f"{session_name} | Error: {error}")

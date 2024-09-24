@@ -92,7 +92,7 @@ class Banana:
         resp_json = await resp.json()
         pprint(resp_json)
 
-        return resp_json  # earned
+        return resp_json
 
     async def claim_quest_lottery(self) -> dict:
         resp = await self.session.post(url='https://interface.carv.io/banana/claim_quest_lottery',
