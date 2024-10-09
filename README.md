@@ -13,8 +13,7 @@ API_HASH=your_api_hash
 1. `python3 -m venv venv`
 2. `source venv/bin/activate` for linux
 3. `.\venv\Scripts\activate.bat` for Windows
-4. `poetry init`
-5. `poetry install`
+4. `poetry init && poetry install` or `pip install -r requirements.txt`
 
 ### Start bot 🤖:
 `python3 main.py`
