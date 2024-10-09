@@ -1,0 +1,7 @@
+pydantic-settings==2.5.2
+Pyrogram==2.0.106
+TgCrypto==1.2.5
+aiohttp==3.10.5
+aiohttp-socks==0.9.0
+loguru==0.7.2
+fake-useragent==1.5.1
